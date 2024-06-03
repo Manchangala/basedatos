@@ -14,4 +14,12 @@ urlpatterns = [
     path('payment/', views.PaymentView.as_view(), name='payment'),
     path('order_confirmation/', views.order_confirmation, name='order_confirmation'),
     path('add_to_cart/', views.AddToCartView.as_view(), name='add_to_cart'),
+
+    # URLs para la sección de administración personalizada
+    path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin/products/', views.admin_products, name='admin_products'),
+    path('admin/orders/', views.admin_orders, name='admin_orders'),
+    path('admin/reports/', views.admin_reports, name='admin_reports'),
 ]
+
+

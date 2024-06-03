@@ -91,14 +91,15 @@ class CartView(LoginRequiredMixin, View):
         return render(request, 'core/cart.html', {'cart': cart, 'form': form, 'step': 1})
 
 
+
 class ConfirmOrderView(LoginRequiredMixin, View):
     def get(self, request):
         cart, created = Cart.objects.get_or_create(customer=request.user.customer)
         return render(request, 'core/confirm_order.html', {'cart': cart, 'step': 2})
 
     def post(self, request):
-        # Aquí puedes añadir lógica adicional si es necesario
         return redirect('choose_delivery')
+
 
 
 class ChooseDeliveryView(LoginRequiredMixin, View):
@@ -106,12 +107,13 @@ class ChooseDeliveryView(LoginRequiredMixin, View):
         return render(request, 'core/choose_delivery.html', {'step': 3})
 
     def post(self, request):
-        choice = request.POST.get('delivery_choice')
-        if choice == 'store':
+        delivery_choice = request.POST.get('delivery_choice')
+        if delivery_choice == 'store':
             return redirect('payment')
-        elif choice == 'home':
+        elif delivery_choice == 'home':
             return redirect('delivery_address')
-        return render(request, 'core/choose_delivery.html', {'step': 3})
+        return render(request, 'core/choose_delivery.html', {'step': 3, 'error': 'Please select a delivery method'})
+
 
 class DeliveryAddressView(LoginRequiredMixin, View):
     def get(self, request):
@@ -127,6 +129,8 @@ class DeliveryAddressView(LoginRequiredMixin, View):
             order.save()
             return redirect('payment')
         return render(request, 'core/delivery_address.html', {'form': form, 'step': 3})
+
+
 
 class PaymentView(LoginRequiredMixin, View):
     def get(self, request):
@@ -153,3 +157,31 @@ class ConfirmOrderView(LoginRequiredMixin, View):
     def post(self, request):
         print("Confirm Order POST request received")
         return redirect('choose_delivery')
+
+
+
+
+
+from django.contrib.admin.views.decorators import staff_member_required
+
+@staff_member_required
+def admin_dashboard(request):
+    return render(request, 'core/admin_dashboard.html')
+
+@staff_member_required
+def admin_products(request):
+    products = Product.objects.all()
+    return render(request, 'core/admin_products.html', {'products': products})
+
+@staff_member_required
+def admin_orders(request):
+    orders = Order.objects.all()
+    return render(request, 'core/admin_orders.html', {'orders': orders})
+
+@staff_member_required
+def admin_reports(request):
+    # Aquí puedes agregar la lógica para generar reportes
+    return render(request, 'core/admin_reports.html')
+
+
+

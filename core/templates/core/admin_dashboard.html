@@ -1,0 +1,12 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="text-center">Admin Dashboard</h1>
+<div class="text-center">
+    <a href="{% url 'admin_products' %}" class="btn btn-primary">Manage Products</a>
+    <a href="{% url 'admin_orders' %}" class="btn btn-primary">View Orders</a>
+    <a href="{% url 'admin_reports' %}" class="btn btn-primary">View Reports</a>
+</div>
+{% endblock %}
