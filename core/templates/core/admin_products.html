@@ -4,6 +4,7 @@
 
 {% block content %}
 <h1 class="text-center">Manage Products</h1>
+<a href="{% url 'admin_product_create' %}" class="btn btn-success mb-3">Add New Product</a>
 <table class="table">
     <thead>
         <tr>
@@ -22,14 +23,13 @@
             <td>{{ product.price }}</td>
             <td>{{ product.category.name }}</td>
             <td>
-                <a href="#" class="btn btn-warning">Edit</a>
-                <a href="#" class="btn btn-danger">Delete</a>
+                <a href="{% url 'admin_product_update' product.pk %}" class="btn btn-warning">Edit</a>
+                <a href="{% url 'admin_product_delete' product.pk %}" class="btn btn-danger">Delete</a>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-<a href="#" class="btn btn-success">Add New Product</a>
 {% endblock %}
 
 

@@ -158,12 +158,17 @@ class ConfirmOrderView(LoginRequiredMixin, View):
         print("Confirm Order POST request received")
         return redirect('choose_delivery')
 
-
-
-
-
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
+from .models import Product, Order
+from .forms import ProductForm
+from django.contrib import messages
+from django.db.models import Count
+from django.db.models.functions import TruncDay
+from django.utils import timezone
+from datetime import timedelta
 
+# Vistas para la administración personalizada
 @staff_member_required
 def admin_dashboard(request):
     return render(request, 'core/admin_dashboard.html')
@@ -174,14 +179,79 @@ def admin_products(request):
     return render(request, 'core/admin_products.html', {'products': products})
 
 @staff_member_required
+def admin_product_create(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Product created successfully')
+            return redirect('admin_products')
+    else:
+        form = ProductForm()
+    return render(request, 'core/admin_product_form.html', {'form': form})
+
+@staff_member_required
+def admin_product_update(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Product updated successfully')
+            return redirect('admin_products')
+    else:
+        form = ProductForm(instance=product)
+    return render(request, 'core/admin_product_form.html', {'form': form})
+
+@staff_member_required
+def admin_product_delete(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        product.delete()
+        messages.success(request, 'Product deleted successfully')
+        return redirect('admin_products')
+    return render(request, 'core/admin_product_confirm_delete.html', {'product': product})
+
+@staff_member_required
 def admin_orders(request):
     orders = Order.objects.all()
     return render(request, 'core/admin_orders.html', {'orders': orders})
 
 @staff_member_required
 def admin_reports(request):
-    # Aquí puedes agregar la lógica para generar reportes
     return render(request, 'core/admin_reports.html')
 
+@staff_member_required
+def report_orders_per_day(request):
+    today = timezone.now().date()
+    start_date = today - timedelta(days=30)
+    orders_per_day = Order.objects.filter(created_at__range=[start_date, today]) \
+                                  .annotate(day=TruncDay('created_at')) \
+                                  .values('day') \
+                                  .annotate(count=Count('id')) \
+                                  .order_by('day')
+    return render(request, 'core/report_orders_per_day.html', {'orders_per_day': orders_per_day})
 
+@staff_member_required
+def report_popular_products(request):
+    popular_products = Product.objects.annotate(order_count=Count('orderitem')).order_by('-order_count')[:10]
+    return render(request, 'core/report_popular_products.html', {'popular_products': popular_products})
+
+@staff_member_required
+def report_orders_per_product(request):
+    orders_per_product = Product.objects.annotate(order_count=Count('orderitem')).order_by('-order_count')
+    return render(request, 'core/report_orders_per_product.html', {'orders_per_product': orders_per_product})
+
+@staff_member_required
+def report_orders_in_period(request):
+    if request.method == 'POST':
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        orders_in_period = Order.objects.filter(created_at__range=[start_date, end_date]).count()
+        return render(request, 'core/report_orders_in_period.html', {
+            'orders_in_period': orders_in_period,
+            'start_date': start_date,
+            'end_date': end_date
+        })
+    return render(request, 'core/report_orders_in_period.html')
 

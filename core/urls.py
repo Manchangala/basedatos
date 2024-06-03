@@ -15,11 +15,22 @@ urlpatterns = [
     path('order_confirmation/', views.order_confirmation, name='order_confirmation'),
     path('add_to_cart/', views.AddToCartView.as_view(), name='add_to_cart'),
 
-    # URLs para la sección de administración personalizada
-    path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
-    path('admin/products/', views.admin_products, name='admin_products'),
-    path('admin/orders/', views.admin_orders, name='admin_orders'),
-    path('admin/reports/', views.admin_reports, name='admin_reports'),
+    # URLs para la sección de administración personalizada sin el prefijo 'admin'
+    path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('dashboard/products/', views.admin_products, name='admin_products'),
+    path('dashboard/products/create/', views.admin_product_create, name='admin_product_create'),
+    path('dashboard/products/<int:pk>/update/', views.admin_product_update, name='admin_product_update'),
+    path('dashboard/products/<int:pk>/delete/', views.admin_product_delete, name='admin_product_delete'),
+    path('dashboard/orders/', views.admin_orders, name='admin_orders'),
+    path('dashboard/reports/', views.admin_reports, name='admin_reports'),
+    path('dashboard/reports/orders_per_day/', views.report_orders_per_day, name='report_orders_per_day'),
+    path('dashboard/reports/popular_products/', views.report_popular_products, name='report_popular_products'),
+    path('dashboard/reports/orders_per_product/', views.report_orders_per_product, name='report_orders_per_product'),
+    path('dashboard/reports/orders_in_period/', views.report_orders_in_period, name='report_orders_in_period'),
 ]
+
+
+
+
 
 

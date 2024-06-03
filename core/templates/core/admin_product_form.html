@@ -1,0 +1,13 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Product Form{% endblock %}
+
+{% block content %}
+<h1 class="text-center">{{ form.instance.pk|yesno:"Update Product,Create Product" }}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">{{ form.instance.pk|yesno:"Update,Create" }}</button>
+    <a href="{% url 'admin_products' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
